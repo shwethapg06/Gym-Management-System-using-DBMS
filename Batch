@@ -14,7 +14,7 @@ import javax.swing.table.*;
 
 /**
  *
- * @author shreyas
+ * 
  */
 public class Batch extends javax.swing.JFrame {
 
