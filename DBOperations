@@ -1,0 +1,128 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package miniproject;
+
+/**
+ *
+ * 
+ */
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Vector;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+public class DBOperations {
+    private static Connection con;
+
+    public static void TestDriver() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Tested");
+        } catch (Exception e) {
+            System.out.println("No driver found");
+        }
+    }
+
+    public static Connection getConnection(String username, String password) {
+        Connection con = null;
+        String hostname = "127.0.0.1";
+        String dbName = "dbmsproject";
+        String connectionUrl = "jdbc:mysql://" + hostname + ":3306/" + dbName;
+        try {
+            con = DriverManager.getConnection(connectionUrl, username, password);
+            return (con);
+        } catch (SQLException sqle) {
+            return (null);
+        }
+    }
+
+    public static void setConnection(Connection con1) {
+        con = con1;
+    }
+
+    public static Connection getConnection() {
+        return (con);
+    }
+
+    public static int UPDATE_Table(String SQL) {
+        try {
+            Statement stmt = con.createStatement();
+            return (stmt.executeUpdate(SQL));
+        } catch (SQLException e) {
+            System.out.println(e);
+            return (-1);
+        }
+    }
+     public static ResultSet SEARCH_Table(String SQL) {
+        try {
+            Statement stmt = con.createStatement();
+            return (stmt.executeQuery(SQL));
+        } catch (SQLException e) {
+            System.out.println(e);
+            return (null);
+        }
+    }
+     public static void populateData_IntoCombo(ResultSet rs, javax.swing.JComboBox jcombo1, javax.swing.JFrame frame) {
+        jcombo1.removeAllItems();
+        try {
+            while (rs.next()) {
+                jcombo1.addItem(rs.getString(1));
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+     public static void ShowDataInTable(ResultSet rs,javax.swing.JTable jTable1,javax.swing.JFrame frame) {
+        int count = 0;
+        Vector<String> columnnames = new Vector<String>();
+         Vector<String> row = new Vector<String>();
+        try {
+            ResultSetMetaData metaRS = rs.getMetaData();
+            int columns = metaRS.getColumnCount();
+            for (int i = 1; i <=columns; i++) {
+                columnnames.add(metaRS.getColumnName(i)); //retrieve all column names
+            }
+           Vector<Vector<Object>> data=new Vector<Vector<Object>>();
+           
+           
+            while (rs.next()) {
+                
+                 Vector<Object> rowData = new Vector<Object>();
+               // rowData.clear();
+               ++count;
+                for (int i = 1; i <=columns; i++) {
+                    rowData.add(rs.getObject(i));
+                    //to get all coulmns of the current rwo
+                }
+                
+                data.add(rowData);    //populate data inot jtable
+                
+            }
+             DefaultTableModel tablemodel = new DefaultTableModel(data,columnnames);
+            jTable1.setModel(tablemodel);
+
+            if (count == 0) {
+               JOptionPane.showMessageDialog(frame, "No record found", "Record search ", 1);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(frame, "Check your query!!!!"+ex, "Record search", 1);
+        }
+    }
+     public static ResultSet CallableExecute(String SQL){
+        try{
+            CallableStatement stmt=con.prepareCall(SQL);
+            return(stmt.executeQuery());
+        }
+         catch (SQLException e) {
+            System.out.println(e);
+            return (null);
+         }
+     }
+}
+    
+
