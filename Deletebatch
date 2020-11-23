@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author shreyas
+ * 
  */
 public class Deletebatch extends javax.swing.JFrame {
 
